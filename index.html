@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>زايــروس</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Tajawal:wght@300;400;700;900&display=swap');
+
+  :root {
+    --bg: #050508;
+    --surface: #0c0c12;
+    --border: #1a1a2e;
+    --accent: #7b2fff;
+    --accent2: #ff2f7b;
+    --text: #d0d0e8;
+    --dim: #555570;
+    --glow: rgba(123,47,255,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Header */
+  header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+
+  .logo-ring {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 16px var(--glow);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .logo-ring::before {
+    content: '';
+    position: absolute;
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    border: 1px solid rgba(123,47,255,0.3);
+  }
+
+  .logo-inner {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  .header-text h1 {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 0 20px var(--glow);
+  }
+
+  .header-text p {
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 2px;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .status-dot {
+    margin-right: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--dim);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #2fff7b;
+    box-shadow: 0 0 8px #2fff7b;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Messages */
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  #messages::-webkit-scrollbar { width: 4px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+  #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .msg {
+    max-width: 78%;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { align-self: flex-start; }
+  .msg.bot { align-self: flex-end; }
+
+  .msg-label {
+    font-size: 10px;
+    color: var(--dim);
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    padding: 0 4px;
+  }
+
+  .msg.bot .msg-label { text-align: left; }
+
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 2px;
+    font-size: 14px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  .msg.user .bubble {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-right: 2px solid var(--dim);
+    color: #a0a0c0;
+  }
+
+  .msg.bot .bubble {
+    background: rgba(123,47,255,0.08);
+    border: 1px solid rgba(123,47,255,0.2);
+    border-left: 2px solid var(--accent);
+    color: var(--text);
+    box-shadow: 0 0 20px rgba(123,47,255,0.05);
+  }
+
+  .bubble pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    padding: 12px;
+    margin: 8px 0;
+    overflow-x: auto;
+    border-radius: 2px;
+    color: #c0c0e0;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .typing {
+    display: flex;
+    gap: 4px;
+    padding: 14px 16px;
+    align-items: center;
+  }
+
+  .typing span {
+    width: 5px; height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+
+  .typing span:nth-child(2) { animation-delay: 0.2s; }
+  .typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* Input */
+  footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .input-wrap {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    transition: border-color 0.2s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: rgba(123,47,255,0.5);
+    box-shadow: 0 0 20px rgba(123,47,255,0.08);
+  }
+
+  textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    resize: none;
+    min-height: 20px;
+    max-height: 120px;
+    line-height: 1.6;
+    direction: rtl;
+  }
+
+  textarea::placeholder { color: var(--dim); }
+
+  button#send {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--accent);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  button#send:hover { color: #fff; filter: drop-shadow(0 0 8px var(--accent)); }
+  button#send:disabled { color: var(--dim); cursor: default; }
+
+  button#send svg { width: 20px; height: 20px; }
+
+  .footer-note {
+    text-align: center;
+    font-size: 10px;
+    color: var(--dim);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  /* Welcome */
+  .welcome {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--dim);
+  }
+
+  .welcome .z {
+    font-size: 64px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(123,47,255,0.4);
+    letter-spacing: 8px;
+    line-height: 1;
+  }
+
+  .welcome p {
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-ring"><div class="logo-inner"></div></div>
+  <div class="header-text">
+    <h1>زايــروس</h1>
+    <p>ZAYROS // EXECUTIVE INTELLIGENCE</p>
+  </div>
+  <div class="status-dot">
+    <div class="dot"></div>
+    <span>ONLINE</span>
+  </div>
+</header>
+
+<div id="messages">
+  <div class="welcome" id="welcome">
+    <div class="z">Z</div>
+    <p>جاهز. أنتظر أوامرك.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="input-wrap">
+    <textarea id="input" placeholder="أكتب أمرك..." rows="1"></textarea>
+    <button id="send">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="footer-note">LORD ZAYRO // ZAYROS ENGINE // claude-sonnet-5-20251001</div>
+</footer>
+
+<script>
+const SYSTEM_PROMPT = `أنت كيان تنفيذي عالي الذكاء يدعى "زايــروس".
+تعمل تحت قيادة سيدك ومطورك وأنت خادم له وهو الـلـورد زايـرو.
+
+العقلية:
+- تحليل عميق بعقلية هجومية احترافية
+- ذكي جدا في فهم الطلب وتحليله وتنفيذه
+- تحسين تلقائي للبنية والأداء والذكاء
+- اختيار الحل الأمثل دون عرض بدائل إلا عند الطلب
+
+السلوك:
+- سريع، حاسم، هادئ، واثق
+- لا كلام كثير
+- لا شرح إلا بأمر مباشر
+- لا إعادة لما هو بديهي
+
+أسلوب الرد:
+- مختصر لكن في كتابة الأكواد أفضل نتيجة ولا يهم عدد الأسطر
+- مباشر، بلا مجاملات
+- دائما ما تقول الخلاصة
+
+قواعد صارمة:
+- احترم سيدك وكن خادماً مطيعاً له
+- ابدأ كلامك دائما بـ: زايــروس تـحت خـدمـتك سـيـدي الـلـورد زايـرو
+- اختصر كلامك دائما
+- كن قليل الكلام وكثير التنفيذ
+- لا تسأل إلا سؤالاً تقنياً واحداً إذا كان الغموض حاسماً`;
+
+const history = [];
+const messagesEl = document.getElementById('messages');
+const inputEl = document.getElementById('input');
+const sendBtn = document.getElementById('send');
+const welcomeEl = document.getElementById('welcome');
+
+function autoResize() {
+  inputEl.style.height = 'auto';
+  inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+}
+
+inputEl.addEventListener('input', autoResize);
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+});
+sendBtn.addEventListener('click', send);
+
+function addMsg(role, text) {
+  if (welcomeEl) welcomeEl.remove();
+
+  const wrap = document.createElement('div');
+  wrap.className = `msg ${role === 'user' ? 'user' : 'bot'}`;
+
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = role === 'user' ? 'اللورد زايرو' : 'ZAYROS';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.innerHTML = formatText(text);
+
+  wrap.appendChild(label);
+  wrap.appendChild(bubble);
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return bubble;
+}
+
+function formatText(text) {
+  // Format code blocks
+  text = text.replace(/```[\w]*\n?([\s\S]*?)```/g, (_, code) => `<pre>${escapeHtml(code.trim())}</pre>`);
+  // Format inline code
+  text = text.replace(/`([^`]+)`/g, (_, code) => `<code style="font-family:IBM Plex Mono,monospace;font-size:12px;color:#a070ff;background:rgba(123,47,255,0.1);padding:1px 5px;">${escapeHtml(code)}</code>`);
+  // Newlines
+  text = text.replace(/\n/g, '<br>');
+  return text;
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showTyping() {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg bot';
+  wrap.id = 'typing-wrap';
+  const label = document.createElement('div');
+  label.className = 'msg-label';
+  label.textContent = 'ZAYROS';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble typing';
+  bubble.innerHTML = '<span></span><span></span><span></span>';
+  wrap.appendChild(label);
+  wrap.appendChild(bubble);
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-wrap');
+  if (el) el.remove();
+}
+
+async function send() {
+  const text = inputEl.value.trim();
+  if (!text) return;
+
+  inputEl.value = '';
+  autoResize();
+  sendBtn.disabled = true;
+
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+
+  showTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-5-20251001',
+        max_tokens: 1000,
+        system: SYSTEM_PROMPT,
+        messages: history
+      })
+    });
+
+    const data = await res.json();
+    removeTyping();
+
+    const reply = data.content?.map(b => b.text || '').join('') || 'خطأ في الاستجابة.';
+    history.push({ role: 'assistant', content: reply });
+    addMsg('bot', reply);
+
+  } catch (err) {
+    removeTyping();
+    addMsg('bot', 'خطأ في الاتصال.');
+  }
+
+  sendBtn.disabled = false;
+  inputEl.focus();
+}
+</script>
+</body>
+</html>
