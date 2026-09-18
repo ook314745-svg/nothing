@@ -328,6 +328,9 @@
 </div>
 
 <footer>
+  <div style="margin-bottom:10px;">
+    <input id="apikey" type="password" placeholder="sk-ant-... أدخل API Key" style="width:100%;background:rgba(255,255,255,0.03);border:1px solid #1a1a2e;padding:8px 12px;color:#d0d0e8;font-family:IBM Plex Mono,monospace;font-size:12px;outline:none;direction:ltr;" />
+  </div>
   <div class="input-wrap">
     <textarea id="input" placeholder="أكتب أمرك..." rows="1"></textarea>
     <button id="send">
@@ -454,9 +457,17 @@ async function send() {
   showTyping();
 
   try {
+    const apiKey = document.getElementById('apikey').value.trim();
+    if (!apiKey) { removeTyping(); addMsg('bot', 'أدخل الـ API Key أولاً.'); sendBtn.disabled = false; return; }
+
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-5-20251001',
         max_tokens: 1000,
